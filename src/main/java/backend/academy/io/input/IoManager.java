@@ -1,5 +1,6 @@
 package backend.academy.io.input;
 
+import backend.academy.lozalization.Localize;
 import backend.academy.game.Difficulty;
 import backend.academy.word.storage.WordsStorage;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,7 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.Arrays;
 
+
 @RequiredArgsConstructor
 public class IoManager {
 
@@ -16,6 +18,9 @@ public class IoManager {
 
     private final BufferedReader bufferedReader;
     private final PrintStream printStream;
+
+
+    //Выводимые сообщения
 
     // Предложения к вводу
     private String difficutyInputMsg = "Введите сложность из набора(цифра - количество жизней)";

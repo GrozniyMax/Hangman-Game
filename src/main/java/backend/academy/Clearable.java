@@ -1,5 +1,6 @@
 package backend.academy;
 
+import lombok.extern.log4j.Log4j2;
 import java.util.Arrays;
 
 /**
