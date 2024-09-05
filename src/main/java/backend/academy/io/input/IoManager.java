@@ -17,6 +17,30 @@ public class IoManager {
     private final BufferedReader bufferedReader;
     private final PrintStream printStream;
 
+    // Предложения к вводу
+    private String difficutyInputMsg = "Введите сложность из набора(цифра - количество жизней)";
+    private String needTipsInputMsg = "Нужны ли вам подсказки?";
+    private String booleanInputMsg=" Введите (да/нет) :";
+    private String letterInputMsg="Введите букву: ";
+    private String categoryInputMsg="Выберите категорию слов из набора ";
+
+    // Сообщения о инвалидном вводе
+    private String invalidDifficultyInputMsg="Вы некорректно ввели сложность. Попробуйте еще раз";
+    private String invalidBooleanInputMsg="Вы некорректное значение. Попробуйте еще раз";
+    private String invalidLetterInputMsg="Вы ввели букву некорректно. Попробуйте еще раз. Необходимо вести 1 букву в любом регистре";
+    private String invalidCategoryInputMsg="Вы ввели категорию неправильно. Пожалуйста попробуйте еще раз";
+
+
+    // Сообщения о выборе сообщения по умолчанию
+    private String defaultDifficultyInputMsg1="Была выбрана сложность ";
+    private String defaultDifficultyInputMsg2=" как сложность по умолчанию";
+    private String defaultBooleanInputMsg="Было установлено значение по умолчанию ";
+    private String defaultCategoryInputMsg="Была выбрана категория по умолчанию: ";
+
+
+    //Дополнительные сообщения
+    private String wrongAlphabetMsg = "Вы ввели букву из другого алфавита. Игра поддерживает только русские буквы";
+
     public static IoManager defaultIoManager() {
         return new IoManager(new BufferedReader(new InputStreamReader(System.in)),
             new PrintStream(System.out));
@@ -25,14 +49,14 @@ public class IoManager {
     public Difficulty readDifficulty() throws IOException {
         for (int i = 0; i < INCORRECT_ATTEMPS_COUNT; i++) {
             try {
-                printStream.print("Введите сложность из набора(цифра - количество жизней)" + Arrays.toString(Difficulty.values()) + " :");
+                printStream.print(difficutyInputMsg + Arrays.toString(Difficulty.values()) + " :");
                 return Difficulty.valueOfRussian(bufferedReader.readLine().strip().toUpperCase());
             } catch (IllegalArgumentException e) {
-                printStream.println("Вы некорректно ввели сложность. Попробуйте еще раз");
+                printStream.println(invalidDifficultyInputMsg);
             }
         }
 
-        printStream.println("Была выбрана сложность " + Difficulty.EASY + " как сложность по умолчанию");
+        printStream.println(defaultDifficultyInputMsg1 + Difficulty.EASY + defaultDifficultyInputMsg2);
         return Difficulty.EASY;
     }
 
@@ -40,12 +64,12 @@ public class IoManager {
      * Метод для чтения необходимости вводить подсказки
      */
     public Boolean readNeedTips() throws IOException {
-        return readBoolean("Нужны ли вам подсказки?", true, "Вы некорректное значение. Попробуйте еще раз");
+        return readBoolean(needTipsInputMsg, true, invalidBooleanInputMsg);
     }
 
     public Boolean readBoolean(String question, Boolean defaultValue, String invalidInputText) throws IOException {
         for (int i = 0; i < INCORRECT_ATTEMPS_COUNT; i++) {
-            printStream.print(question + " Введите (да/нет) :");
+            printStream.print(question + booleanInputMsg);
             String input = bufferedReader.readLine().strip();
             if (input.equalsIgnoreCase("true") || input.equalsIgnoreCase("yes") ||
                 input.equalsIgnoreCase("y") ||
@@ -59,25 +83,24 @@ public class IoManager {
                 printStream.println(invalidInputText);
             }
         }
-        printStream.printf("Было установлено значение по умолчанию (%b)", defaultValue);
+        printStream.printf(defaultBooleanInputMsg +  defaultValue);
         return defaultValue;
     }
 
     public Character readLetter() throws IOException {
-        printStream.print("Введите букву: ");
+        printStream.print(letterInputMsg);
         String line = bufferedReader.readLine().strip().toUpperCase();
         if (line.length() == 1) {
 
             if ((Character.isLetter(line.charAt(0))) && Character.UnicodeBlock.of(line.charAt(0)).equals(Character.UnicodeBlock.CYRILLIC)) {
                 return line.charAt(0);
             }else {
-                printStream.print("Вы ввели букву из другого алфавита. Игра поддерживает только русские буквы");
+                printStream.print(wrongAlphabetMsg);
                 return readLetter();
             }
         }
         else {
-            printStream.println("Вы ввели букву некорректно. Попробуйте еще раз." +
-                " Необходимо вести 1 букву в любом регистре");
+            printStream.println(invalidLetterInputMsg);
             // Я надеюсь не надо задумываться над тем,
             // что пользователь будет так долго вводить неправильно, что выскочит StackOverFlowException
             return readLetter();
@@ -86,16 +109,16 @@ public class IoManager {
 
     public String readCategory(WordsStorage wordsStorage) throws IOException {
         for (int i = 0; i < INCORRECT_ATTEMPS_COUNT; i++) {
-            printStream.print("Выберите категорию слов из набора " + wordsStorage.categories()  + " :");
+            printStream.print( categoryInputMsg+ wordsStorage.categories()  + " :");
             String line = bufferedReader.readLine().strip().toUpperCase();
             if (wordsStorage.hasCategory(line)) {
                 return line;
             } else {
-                System.out.println("Вы ввели категорию неправильно. Пожалуйста попробуйте еще раз");
+                System.out.println(invalidCategoryInputMsg);
             }
         }
         String category = wordsStorage.getRandomCategory();
-        printStream.println("Была выбрана категория по умолчанию: " + category);
+        printStream.println( defaultCategoryInputMsg+ category);
         return category;
 
     }
