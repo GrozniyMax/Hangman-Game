@@ -1,4 +1,4 @@
-package backend.academy.output.storage;
+package backend.academy.io.output.storage;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,6 +1,5 @@
-package backend.academy.output.storage;
+package backend.academy.io.output.storage;
 
-import backend.academy.Main;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.Objects;

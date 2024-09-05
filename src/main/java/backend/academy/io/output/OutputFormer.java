@@ -1,8 +1,8 @@
-package backend.academy.output;
+package backend.academy.io.output;
 
 import backend.academy.Clearable;
 import backend.academy.Setupable;
-import backend.academy.output.storage.OutputStorage;
+import backend.academy.io.output.storage.OutputStorage;
 import backend.academy.word.Word;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
