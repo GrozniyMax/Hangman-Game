@@ -38,21 +38,21 @@ public class Junit5ExamplesTest {
         @ParameterizedTest
         @ValueSource(ints = {1, 3, 5, -3, 15, Integer.MAX_VALUE}) // six numbers
         void isOdd_ShouldReturnTrueForOddNumbers(int number) {
-            assertThat(number).isOdd();
+            Assertions.assertThat(number).isOdd();
         }
 
         @ParameterizedTest
         @EnumSource(Month.class)
         void getValueForAMonth_IsAlwaysBetweenOneAndTwelve(Month month) {
             int monthNumber = month.getValue();
-            assertThat(monthNumber).isGreaterThanOrEqualTo(1).isLessThanOrEqualTo(12);
+            Assertions.assertThat(monthNumber).isGreaterThanOrEqualTo(1).isLessThanOrEqualTo(12);
         }
 
         @ParameterizedTest
         @CsvSource({"test,TEST", "tEst,TEST", "Java,JAVA"})
         void toUpperCase_ShouldGenerateTheExpectedUppercaseValue(String input, String expected) {
             String actualValue = input.toUpperCase();
-            assertThat(actualValue).isEqualTo(expected);
+            Assertions.assertThat(actualValue).isEqualTo(expected);
         }
 
         record MyData(String data) {
@@ -69,7 +69,7 @@ public class Junit5ExamplesTest {
         @ParameterizedTest
         @MethodSource("provideData")
         void validateData(MyData myData) {
-            assertThat(myData.data()).isNotNull();
+            Assertions.assertThat(myData.data()).isNotNull();
         }
 
         private static Stream<Arguments> provideStringsForIsBlank() {
@@ -84,21 +84,21 @@ public class Junit5ExamplesTest {
         @ParameterizedTest
         @MethodSource("provideStringsForIsBlank")
         void isBlank_ShouldReturnTrueForNullOrBlankStrings(String input, boolean expected) {
-            assertThat(Strings.isBlank(input)).isEqualTo(expected);
+            Assertions.assertThat(Strings.isBlank(input)).isEqualTo(expected);
         }
 
         @ParameterizedTest(name = "{index} {0} is 30 days long")
         @EnumSource(value = Month.class, names = {"APRIL", "JUNE", "SEPTEMBER", "NOVEMBER"})
         void someMonths_Are30DaysLong(Month month) {
             final boolean isALeapYear = false;
-            assertThat(month.length(isALeapYear)).isEqualTo(30);
+            Assertions.assertThat(month.length(isALeapYear)).isEqualTo(30);
         }
 
         @ParameterizedTest
         @NullAndEmptySource
         @ValueSource(strings = {"  ", "\t", "\n"})
         void isBlank_ShouldReturnTrueForAllTypesOfBlankStrings(String input) {
-            assertThat(Strings.isBlank(input)).isTrue();
+            Assertions.assertThat(Strings.isBlank(input)).isTrue();
         }
     }
 
@@ -111,14 +111,14 @@ public class Junit5ExamplesTest {
         public void tempDirV1_use_field() throws IOException {
             Path file = tmpDir.toAbsolutePath().resolve("temp.txt");
             Files.write(file, "ABCD".getBytes(), StandardOpenOption.CREATE, StandardOpenOption.WRITE);
-            assertThat(new String(Files.readAllBytes(file))).isEqualTo("ABCD");
+            Assertions.assertThat(new String(Files.readAllBytes(file))).isEqualTo("ABCD");
         }
 
         @Test
         public void tempDirV2_inject_as_argument(@TempDir Path argumentTempDir) throws IOException {
             Path file = argumentTempDir.toAbsolutePath().resolve("temp.txt");
             Files.write(file, "ABCD".getBytes(), StandardOpenOption.CREATE, StandardOpenOption.WRITE);
-            assertThat(new String(Files.readAllBytes(file))).isEqualTo("ABCD");
+            Assertions.assertThat(new String(Files.readAllBytes(file))).isEqualTo("ABCD");
         }
     }
 
@@ -137,20 +137,20 @@ public class Junit5ExamplesTest {
 
         @Test
         public void simpleTimeout() {
-            int result = assertTimeout(Duration.ofMinutes(2), () -> 1 + 1);
-            assertThat(result).isEqualTo(2);
+            int result = Assertions.assertTimeout(Duration.ofMinutes(2), () -> 1 + 1);
+            Assertions.assertThat(result).isEqualTo(2);
         }
 
         @Test
         void testInfo(TestInfo testInfo) {
             String displayName = testInfo.getDisplayName();
-            assertThat(displayName).isEqualTo("testInfo(TestInfo)");
+            Assertions.assertThat(displayName).isEqualTo("testInfo(TestInfo)");
         }
 
         @RepeatedTest(10)
         @DisplayName("repetition")
         void repetitionTest(RepetitionInfo repetitionInfo) {
-            assertThat(repetitionInfo.getTotalRepetitions()).isEqualTo(10);
+            Assertions.assertThat(repetitionInfo.getTotalRepetitions()).isEqualTo(10);
         }
     }
 }

@@ -40,7 +40,7 @@ public class AssertjExamplesTest {
     class BasicAssertions {
         @Test
         void a_few_simple_assertions() {
-            assertThat("The Lord of the Rings").isNotNull()
+            Assertions.assertThat("The Lord of the Rings").isNotNull()
                 .startsWith("The")
                 .contains("Lord")
                 .endsWith("Rings");
@@ -50,32 +50,32 @@ public class AssertjExamplesTest {
         void dateExample() {
             Instant now = Clock.systemUTC().instant();
             Instant yesterday = now.minus(Duration.ofDays(1));
-            assertThat(now).isAfter(yesterday);
+            Assertions.assertThat(now).isAfter(yesterday);
         }
 
         @Test
         void atomicExample() {
             AtomicInteger atomic = new AtomicInteger(0);
             atomic.set(8);
-            assertThat(atomic).hasValueBetween(5, 10);
+            Assertions.assertThat(atomic).hasValueBetween(5, 10);
         }
 
         @Test
         void arrayExample() {
             int[] array = new int[] {5};
-            assertThat(array).containsAnyOf(1, 3, 5);
+            Assertions.assertThat(array).containsAnyOf(1, 3, 5);
         }
 
         @Test
         void streamExample() {
             IntStream stream = IntStream.iterate(2, i -> i * 2).limit(100);
-            assertThat(stream).allMatch(number -> number % 2 == 0);
+            Assertions.assertThat(stream).allMatch(number -> number % 2 == 0);
         }
 
         @Test
         void mapExample() {
             Map<String, Integer> map = Map.of("1", 1, "3", 3);
-            assertThat(map).hasKeySatisfying(new Condition<>() {
+            Assertions.assertThat(map).hasKeySatisfying(new Condition<>() {
                 @Override
                 public boolean matches(String value) {
                     return Integer.parseInt(value) % 2 == 1;
@@ -107,32 +107,32 @@ public class AssertjExamplesTest {
 
         @Test
         public void objectEqualityAssertions() {
-            assertThat(frodo).isNotEqualTo(sam);
-            assertThat(frodo).usingComparator(comparing(TolkienCharacter::race)).isEqualTo(sam);
+            Assertions.assertThat(frodo).isNotEqualTo(sam);
+            Assertions.assertThat(frodo).usingComparator(Comparator.comparing(TolkienCharacter::race)).isEqualTo(sam);
 
             // standard comparison : the fellowshipOfTheRing includes Gandalf but not Sauron (believe me) ...
-            assertThat(fellowshipOfTheRing).contains(gandalf).doesNotContain(sauron);
+            Assertions.assertThat(fellowshipOfTheRing).contains(gandalf).doesNotContain(sauron);
             // ... but if we compare race only, Sauron is in fellowshipOfTheRing (he's a Maia like Gandalf)
-            assertThat(fellowshipOfTheRing)
-                .usingElementComparator(comparing(TolkienCharacter::race))
+            Assertions.assertThat(fellowshipOfTheRing)
+                .usingElementComparator(Comparator.comparing(TolkienCharacter::race))
                 .contains(sauron);
 
             // Fail as equals compares object references
             TolkienCharacter frodoCopy = new TolkienCharacter("Frodo", 33, HOBBIT);
-            assertThat(frodo).isEqualTo(frodoCopy);
+            Assertions.assertThat(frodo).isEqualTo(frodoCopy);
             // frodo and frodoClone are equal when doing a field by field comparison.
-            assertThat(frodo).usingRecursiveComparison().isEqualTo(frodoCopy);
+            Assertions.assertThat(frodo).usingRecursiveComparison().isEqualTo(frodoCopy);
 
             // frodo and sam both are hobbits, so they are equal when comparing only race
-            assertThat(frodo).usingRecursiveComparison().comparingOnlyFields("race").isEqualTo(sam); // OK
+            Assertions.assertThat(frodo).usingRecursiveComparison().comparingOnlyFields("race").isEqualTo(sam); // OK
             // they are also equals when comparing only race name (nested field).
-            assertThat(frodo).usingRecursiveComparison().comparingOnlyFields("race.name").isEqualTo(sam); // OK
+            Assertions.assertThat(frodo).usingRecursiveComparison().comparingOnlyFields("race.name").isEqualTo(sam); // OK
         }
 
         @Test
         public void descriptionExample() {
             log.info(
-                catchThrowable(() -> assertThat(frodo.age())
+                AssertionsForClassTypes.catchThrowable(() -> Assertions.assertThat(frodo.age())
                     .as("check %s's age", frodo.age())
                     .withFailMessage("should be %s", frodo)
                     .isEqualTo(sam)
@@ -145,26 +145,26 @@ public class AssertjExamplesTest {
             List<TolkienCharacter> hobbits = List.of(frodo, sam, pippin);
 
             // all elements must satisfy the given assertions
-            assertThat(hobbits).allSatisfy(character -> {
-                assertThat(character.race()).isEqualTo(HOBBIT);
-                assertThat(character.name()).isNotEqualTo("Sauron");
+            Assertions.assertThat(hobbits).allSatisfy(character -> {
+                Assertions.assertThat(character.race()).isEqualTo(HOBBIT);
+                Assertions.assertThat(character.name()).isNotEqualTo("Sauron");
             });
 
             // at least one element must satisfy the given assertions
-            assertThat(hobbits).anySatisfy(character -> {
-                assertThat(character.race()).isEqualTo(HOBBIT);
-                assertThat(character.name()).isEqualTo("Sam");
+            Assertions.assertThat(hobbits).anySatisfy(character -> {
+                Assertions.assertThat(character.race()).isEqualTo(HOBBIT);
+                Assertions.assertThat(character.name()).isEqualTo("Sam");
             });
 
             // no element must satisfy the given assertions
-            assertThat(hobbits).noneSatisfy(character -> assertThat(character.race()).isEqualTo(ELF));
+            Assertions.assertThat(hobbits).noneSatisfy(character -> Assertions.assertThat(character.race()).isEqualTo(ELF));
         }
 
         @Test
         public void matchExample() {
             List<TolkienCharacter> hobbits = List.of(frodo, sam, pippin);
 
-            assertThat(hobbits).allMatch(character -> character.race() == HOBBIT, "hobbits")
+            Assertions.assertThat(hobbits).allMatch(character -> character.race() == HOBBIT, "hobbits")
                 .anyMatch(character -> character.name().contains("pp"))
                 .noneMatch(character -> character.race() == ORC);
         }
@@ -172,26 +172,26 @@ public class AssertjExamplesTest {
         @Test
         public void filterExample() {
             // filters use introspection to get property/field values
-            assertThat(fellowshipOfTheRing).filteredOn("race", HOBBIT)
+            Assertions.assertThat(fellowshipOfTheRing).filteredOn("race", HOBBIT)
                 .containsOnly(sam, frodo, pippin, merry);
 
             // nested properties are supported
-            assertThat(fellowshipOfTheRing).filteredOn("race.name", "Man")
+            Assertions.assertThat(fellowshipOfTheRing).filteredOn("race.name", "Man")
                 .containsOnly(aragorn, boromir);
 
             // you can apply different comparison
-            assertThat(fellowshipOfTheRing).filteredOn("race", notIn(HOBBIT, MAN))
+            Assertions.assertThat(fellowshipOfTheRing).filteredOn("race", Assertions.notIn(HOBBIT, MAN))
                 .containsOnly(gandalf, gimli, legolas);
 
-            assertThat(fellowshipOfTheRing).filteredOn("race", in(MAIA, MAN))
+            Assertions.assertThat(fellowshipOfTheRing).filteredOn("race", Assertions.in(MAIA, MAN))
                 .containsOnly(gandalf, boromir, aragorn);
 
-            assertThat(fellowshipOfTheRing).filteredOn("race", not(HOBBIT))
+            Assertions.assertThat(fellowshipOfTheRing).filteredOn("race", Assertions.not(HOBBIT))
                 .containsOnly(gandalf, boromir, aragorn, gimli, legolas);
 
             // you can chain multiple filter criteria
-            assertThat(fellowshipOfTheRing).filteredOn("race", MAN)
-                .filteredOn("name", not("Boromir"))
+            Assertions.assertThat(fellowshipOfTheRing).filteredOn("race", MAN)
+                .filteredOn("name", Assertions.not("Boromir"))
                 .containsOnly(aragorn);
         }
     }
@@ -202,7 +202,7 @@ public class AssertjExamplesTest {
         public void example() {
             Throwable throwable = new IllegalArgumentException("wrong amount 123");
 
-            assertThat(throwable).hasMessage("wrong amount 123")
+            Assertions.assertThat(throwable).hasMessage("wrong amount 123")
                 .hasMessage("%s amount %d", "wrong", 123)
                 // check start
                 .hasMessageStartingWith("wrong")

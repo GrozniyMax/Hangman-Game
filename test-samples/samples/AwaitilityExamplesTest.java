@@ -13,7 +13,7 @@ import static org.awaitility.Awaitility.given;
 public class AwaitilityExamplesTest {
     @Test
     public void awaitExample() {
-        given()
+        Awaitility.given()
             .ignoreException(IllegalStateException.class)
             .await()
             .atLeast(Duration.ofMillis(1))
