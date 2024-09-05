@@ -3,24 +3,31 @@ package backend.academy;
 import backend.academy.game.Game;
 import backend.academy.game.GameSetupParams;
 import backend.academy.io.input.IoManager;
+import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 import java.io.IOException;
 import java.util.Arrays;
 
+@Log4j2
 public class Main {
+
+    public static Boolean debugEnabled = Boolean.FALSE;
 
     public static void main(String[] args) throws IOException {
 
-        boolean isDebug = Arrays.stream(args).filter(arg->arg.equals("--debug")).count()==1;
-        Boolean restart = true;
+        debugEnabled = Arrays.stream(args).filter(arg->arg.equals("--debug")).count()==1;
+        if (!debugEnabled){
+            Configurator.setRootLevel(org.apache.logging.log4j.Level.OFF);
+        }
 
+        boolean restart = true;
         while (restart) {
             try {
                 IoManager ioManager = IoManager.defaultIoManager();
                 var game = Game.withDefauls();
 
-                if (Arrays.binarySearch(args, "--debug") != -1) {
-                    game.setMode(isDebug ? "debug" : "play");
-                }
 
                 var params = GameSetupParams.builder()
                     .difficulty(ioManager.readDifficulty())
@@ -33,9 +40,10 @@ public class Main {
                 restart = ioManager.readBoolean("Играем еще раз?", true, "Попробуйте еще раз");
                 game.clear();
             } catch (IOException e) {
-                if (!isDebug) continue;
+                if (debugEnabled) log.warn("IOException occurs: "+e.getMessage());
                 System.err.println("Возникла непредвиденная ошибка связанная с вводом/выводом");
-                e.printStackTrace();
+            }catch (Exception e) {
+                if (debugEnabled) log.warn("Exception {} occurs: {}", e.getClass().getSimpleName(), e.getMessage());
             }
         }
     }

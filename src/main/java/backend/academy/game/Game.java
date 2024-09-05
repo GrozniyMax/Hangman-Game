@@ -1,5 +1,7 @@
 package backend.academy.game;
 
+import backend.academy.Clearable;
+import backend.academy.Setupable;
 import backend.academy.io.input.IoManager;
 import backend.academy.io.output.OutputFormer;
 import backend.academy.io.output.storage.OutputStorage;
@@ -8,6 +10,7 @@ import backend.academy.word.storage.ResourceWordStorage;
 import backend.academy.word.Word;
 import backend.academy.word.storage.WordsStorage;
 import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
 import org.jspecify.annotations.NonNull;
 import java.io.IOException;
 import java.util.HashSet;
@@ -15,6 +18,7 @@ import java.util.Optional;
 import java.util.Set;
 
 
+@Log4j2
 public class Game implements Clearable, Setupable<GameSetupParams> {
 
     private int frameIndex=0;
@@ -80,6 +84,9 @@ public class Game implements Clearable, Setupable<GameSetupParams> {
         this.needTips=gameSetupParams.needTips();
         this.frameStep = this.difficulty.calculateStep(this.outputFormer.getNumberOfFrames());
         this.outputFormer.setup(this.word);
+
+        log.info("Game setup with difficulty:{} , needTips:{}", difficulty, needTips);
+
     }
 
     public void run() throws IOException {
@@ -95,6 +102,7 @@ public class Game implements Clearable, Setupable<GameSetupParams> {
             if (currentHP<=0){
                 ioManager.print(outputFormer.createOutputForLastFrame());
             }
+            log.info("Current game HP:{}, wrong-letters:{}, right-letters:{}", currentHP, wrongLetters, correctLetters);
         }
 
         ioManager.print("К сожалению, у вас жизни закончились");
@@ -102,7 +110,7 @@ public class Game implements Clearable, Setupable<GameSetupParams> {
 
     private void round() throws IOException {
         Character letter = ioManager.readLetter();
-
+        log.info("Got letter:{}", letter.toString());
         if (wrongLetters.contains(letter)||correctLetters.contains(letter)) {
             ioManager.print("Вы уже ввели эту букву");
             return;
@@ -122,16 +130,12 @@ public class Game implements Clearable, Setupable<GameSetupParams> {
     private void askForTip() throws IOException {
 
         boolean needTip = ioManager.readBoolean("Нужна подсказка?", true, "Попробуйте еще раз, пожалуйста");
+        log.info("Got value {}", needTip);
         if (needTip) {
             ioManager.print(
             Optional.of(word.getTip(++tipCount))
                 .orElse("К сожалению подсказки закончились(дальше только своими силами)"));
         }
-    }
-
-
-    public void setMode(String mode){
-        outputFormer.enableDebug(mode.strip().equalsIgnoreCase("debug"));
     }
 
     private Boolean checkWin(){

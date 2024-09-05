@@ -1,6 +1,7 @@
 package backend.academy.io.output;
 
 import backend.academy.Clearable;
+import backend.academy.Main;
 import backend.academy.Setupable;
 import backend.academy.io.output.storage.OutputStorage;
 import backend.academy.word.Word;
@@ -23,19 +24,15 @@ public class OutputFormer implements Clearable, Setupable<Word> {
     @NonNull
     private final Set<Character> rightLetters;
 
-    private Boolean isDebug = false;
 
     public void setup(Word word) {
         this.word = word;
     }
 
-    public void enableDebug(Boolean enable){
-        isDebug = enable;
-    }
 
     public String createOutput(int frameIndex) {
         StringBuilder builder = new StringBuilder();
-        builder.append(formDelimiter(isDebug));
+        builder.append(formDelimiter());
         builder.append(String.format("КАТЕГОРИЯ: %s \n", word.category()));
         builder.append(formFirstLine());
         outputStorage.getFrame(frameIndex).forEach(line->builder.append(line).append("\n"));
@@ -73,8 +70,8 @@ public class OutputFormer implements Clearable, Setupable<Word> {
         return List.of(firstLine.toString(), secondLine.toString());
     }
 
-    private String formDelimiter(Boolean isDebugging){
-        if (isDebugging) {
+    private String formDelimiter(){
+        if (Main.debugEnabled) {
             return "\n\n----------------------------------------------------------------\n\n";
         }else {
             return "\033[H\033[2J";

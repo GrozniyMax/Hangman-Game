@@ -1,8 +1,10 @@
 package backend.academy.word.storage;
 
+import backend.academy.Main;
 import backend.academy.word.Word;
 import lombok.Getter;
 import lombok.ToString;
+import lombok.extern.log4j.Log4j2;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,6 +18,7 @@ import java.util.Random;
 import java.util.Set;
 
 @Getter @ToString
+@Log4j2
 public class WordsStorage {
 
     private Map<String, List<Word>> words = new HashMap<>();
@@ -39,8 +42,10 @@ public class WordsStorage {
                 words.get(w.category()).add(w);
             } catch (NullPointerException e) {
                 // Если что то не так с этим словом, то его удобнее пропустить
+                log.warn("Error while loading word {} with property {}", i, e.getMessage());
             }
         }
+
     }
 
     public void load(String filepath) throws IOException {
