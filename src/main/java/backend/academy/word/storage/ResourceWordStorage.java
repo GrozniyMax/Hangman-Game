@@ -19,7 +19,7 @@ public class ResourceWordStorage extends WordsStorage {
         Properties properties = new Properties();
 
         var stream = Main.class.getResourceAsStream("/words.properties");
-        if (Objects.isNull(stream)) {//TODO check it later
+        if (Objects.isNull(stream)) {
             log.warn("Cannot find words.properties file");
         }
         properties.load(
