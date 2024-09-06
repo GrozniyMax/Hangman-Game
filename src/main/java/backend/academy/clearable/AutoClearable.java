@@ -1,18 +1,16 @@
-package backend.academy;
+package backend.academy.clearable;
 
 import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.util.Arrays;
 
 /**
  * Интерфейс для классов, где есть поля, модифицируемые в процессе игры.
  */
-public interface Clearable {
+public interface AutoClearable  extends Clearable {
 
-    /**
-     * Очищает все модифицируемые поля, не реализующие интерфейс Clearable
-     */
-    void clear();
-
+    static final Logger log = LogManager.getLogger();
     /**
      * Метод, который вызывает clear() во всех полях объекта, которые реализуют интерфейс Clearable
      */
@@ -22,11 +20,15 @@ public interface Clearable {
                 try {
                     field.setAccessible(true);
                     Object fieldValue = field.get(this);
-                    if (fieldValue instanceof Clearable) {
-                        ((Clearable) fieldValue).fullClear();
+                    if (fieldValue instanceof AutoClearable) {
+                        ((AutoClearable) fieldValue).fullClear();
+                        log.info("Field {} was auto-cleared", field.getName());
+                    } else if (fieldValue instanceof Clearable) {
+                        log.info("Field {} was cleared", field.getName());
+                        ((Clearable) fieldValue).clear();
                     }
                 } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
+                    log.error("Error clearing field {}: {}", field.getName(), e);
                 }
             }));
     }

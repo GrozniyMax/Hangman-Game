@@ -12,6 +12,7 @@ import java.util.Arrays;
 
 
 @RequiredArgsConstructor
+@Localize("localization.IoManager")
 public class IoManager {
 
     private static final int INCORRECT_ATTEMPS_COUNT = 3;
@@ -20,42 +21,58 @@ public class IoManager {
     private final PrintStream printStream;
 
 
+    private static final IoManager defaultIoManager = new IoManager(new BufferedReader(new InputStreamReader(System.in)),
+        new PrintStream(System.out));
+
+    public static IoManager defaultIoManager() {
+        return defaultIoManager;
+    }
+
     //Выводимые сообщения
 
     // Предложения к вводу
+    @Localize
     private String difficutyInputMsg = "Введите сложность из набора(цифра - количество жизней)";
+    @Localize
     private String needTipsInputMsg = "Нужны ли вам подсказки?";
+    @Localize
     private String booleanInputMsg=" Введите (да/нет) :";
+    @Localize
     private String letterInputMsg="Введите букву: ";
+    @Localize
     private String categoryInputMsg="Выберите категорию слов из набора ";
 
     // Сообщения о инвалидном вводе
+    @Localize
     private String invalidDifficultyInputMsg="Вы некорректно ввели сложность. Попробуйте еще раз";
+    @Localize
     private String invalidBooleanInputMsg="Вы некорректное значение. Попробуйте еще раз";
+    @Localize
     private String invalidLetterInputMsg="Вы ввели букву некорректно. Попробуйте еще раз. Необходимо вести 1 букву в любом регистре";
+    @Localize
     private String invalidCategoryInputMsg="Вы ввели категорию неправильно. Пожалуйста попробуйте еще раз";
 
 
     // Сообщения о выборе сообщения по умолчанию
+    @Localize
     private String defaultDifficultyInputMsg1="Была выбрана сложность ";
+    @Localize
     private String defaultDifficultyInputMsg2=" как сложность по умолчанию";
+    @Localize
     private String defaultBooleanInputMsg="Было установлено значение по умолчанию ";
+    @Localize
     private String defaultCategoryInputMsg="Была выбрана категория по умолчанию: ";
 
 
     //Дополнительные сообщения
+    @Localize
     private String wrongAlphabetMsg = "Вы ввели букву из другого алфавита. Игра поддерживает только русские буквы";
-
-    public static IoManager defaultIoManager() {
-        return new IoManager(new BufferedReader(new InputStreamReader(System.in)),
-            new PrintStream(System.out));
-    }
 
     public Difficulty readDifficulty() throws IOException {
         for (int i = 0; i < INCORRECT_ATTEMPS_COUNT; i++) {
             try {
                 printStream.print(difficutyInputMsg + Arrays.toString(Difficulty.values()) + " :");
-                return Difficulty.valueOfRussian(bufferedReader.readLine().strip().toUpperCase());
+                return Difficulty.valueOfLocalizeName(bufferedReader.readLine().strip().toUpperCase());
             } catch (IllegalArgumentException e) {
                 printStream.println(invalidDifficultyInputMsg);
             }

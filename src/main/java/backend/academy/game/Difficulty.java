@@ -1,11 +1,13 @@
 package backend.academy.game;
 
+import backend.academy.lozalization.Localize;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import java.util.Arrays;
 
 @Getter
 @RequiredArgsConstructor
+@Localize("localization.Difficulty")
 public enum Difficulty {
 
     EASY(10, "Легко"),
@@ -13,21 +15,24 @@ public enum Difficulty {
     HARD(3, "Сложно");
 
     private final int triesCount;
-    private final String russianName;
+
+    @Localize()
+    private final String localizedName;
 
     public int calculateStep(Integer maxTriesCount){
-        if ((maxTriesCount<0)||(maxTriesCount<triesCount)) throw new IllegalArgumentException("Argument must be positive");
-        return maxTriesCount/ triesCount;
+        if (maxTriesCount<0) throw new IllegalArgumentException("Argument must be positive");
+        if (maxTriesCount<triesCount) throw new IllegalArgumentException("maxTriesCount must be greater than tries count");
+        return maxTriesCount/triesCount;
     }
 
     @Override
     public String toString() {
-        return this.russianName()+String.format(" - %d ", triesCount);
+        return this.localizedName()+String.format(" - %d ", triesCount);
     }
 
-    public static Difficulty valueOfRussian(String russianName){
+    public static Difficulty valueOfLocalizeName(String localizedName){
         return Arrays.stream(Difficulty.values())
-            .filter(difficulty -> difficulty.russianName.equalsIgnoreCase(russianName))
+            .filter(difficulty -> difficulty.localizedName.equalsIgnoreCase(localizedName))
             .findFirst().orElseThrow(IllegalArgumentException::new);
     }
 }

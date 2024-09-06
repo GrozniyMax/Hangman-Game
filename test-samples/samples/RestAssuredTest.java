@@ -18,7 +18,7 @@ public class RestAssuredTest {
             "job", "Testing"
         );
 
-        given()
+        RestAssured.given()
             .contentType(ContentType.JSON)
             .body(data)
 
@@ -27,15 +27,15 @@ public class RestAssuredTest {
 
             .then()
             .statusCode(201)
-            .body("name", equalTo("NewUser1"))
-            .body("job", equalTo("Testing"))
+            .body("name", Matchers.equalTo("NewUser1"))
+            .body("job", Matchers.equalTo("Testing"))
             .log().all();
 
     }
 
     @Test
     public void getUser() {
-        given()
+        RestAssured.given()
             .contentType(ContentType.JSON)
 
             .when()
@@ -43,7 +43,7 @@ public class RestAssuredTest {
 
             .then()
             .statusCode(200)
-            .body("data.first_name", equalTo("Janet"))
+            .body("data.first_name", Matchers.equalTo("Janet"))
             .log().all();
     }
 }

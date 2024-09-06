@@ -1,9 +1,10 @@
 package backend.academy.io.output;
 
-import backend.academy.Clearable;
+import backend.academy.clearable.Clearable;
 import backend.academy.Main;
 import backend.academy.Setupable;
 import backend.academy.io.output.storage.OutputStorage;
+import backend.academy.lozalization.Localize;
 import backend.academy.word.Word;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 @RequiredArgsConstructor(onConstructor_ = {@NonNull})
+@Localize("localization.OutputFormer")
 public class OutputFormer implements Clearable, Setupable<Word> {
 
     @NonNull
@@ -18,11 +20,13 @@ public class OutputFormer implements Clearable, Setupable<Word> {
 
     private Word word;
 
-
     @NonNull
     private final Set<Character> wrongLetters;
     @NonNull
     private final Set<Character> rightLetters;
+
+    @Localize
+    private String categoryString="КАТЕГОРИЯ";
 
 
     public void setup(Word word) {
@@ -33,7 +37,7 @@ public class OutputFormer implements Clearable, Setupable<Word> {
     public String createOutput(int frameIndex) {
         StringBuilder builder = new StringBuilder();
         builder.append(formDelimiter());
-        builder.append(String.format("КАТЕГОРИЯ: %s \n", word.category()));
+        builder.append(String.format(categoryString + ": %s \n", word.category()));
         builder.append(formFirstLine());
         outputStorage.getFrame(frameIndex).forEach(line->builder.append(line).append("\n"));
         builder.append("\n");
@@ -88,6 +92,5 @@ public class OutputFormer implements Clearable, Setupable<Word> {
     public void clear() {
         wrongLetters.clear();
         rightLetters.clear();
-        clearClearableFields();
     }
 }

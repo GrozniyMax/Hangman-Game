@@ -39,57 +39,57 @@ public class InstancioExamplesTest {
     public void create() {
         // Create by specifying the class
         Person person = Instancio.create(Person.class);
-        assertThat(person).hasNoNullFieldsOrProperties();
+        Assertions.assertThat(person).hasNoNullFieldsOrProperties();
 
         // Using type tokens
         ImmutablePair<String, Long> pair = Instancio.create(new TypeToken<>() {
         });
-        assertThat(pair).isNotNull();
+        Assertions.assertThat(pair).isNotNull();
 
         Map<Integer, List<String>> map = Instancio.create(new TypeToken<>() {
         });
-        assertThat(map).isNotEmpty();
+        Assertions.assertThat(map).isNotEmpty();
 
         // Create from a model
         Model<Person> personModel = Instancio.of(Person.class)
-            .ignore(field(Person::age))
+            .ignore(Select.field(Person::age))
             .toModel();
         Person personWithoutAgeAndAddress = Instancio.of(personModel)
-            .ignore(field(Person::address))
+            .ignore(Select.field(Person::address))
             .create();
-        assertThat(personWithoutAgeAndAddress)
+        Assertions.assertThat(personWithoutAgeAndAddress)
             .hasNoNullFieldsOrPropertiesExcept("address");
     }
 
     @Test
     public void createCollections() {
         List<Person> list1 = Instancio.ofList(Person.class).size(10).create();
-        assertThat(list1).hasSize(10);
+        Assertions.assertThat(list1).hasSize(10);
         var list2 = Instancio.<ImmutablePair<String, Integer>>ofList(new TypeToken<>() {
         }).create();
-        assertThat(list2).hasSizeBetween(1, 10);
+        Assertions.assertThat(list2).hasSizeBetween(1, 10);
 
         Map<UUID, Address> map = Instancio.ofMap(UUID.class, Address.class).size(3)
-            .set(field(Address::city), "Vancouver")
+            .set(Select.field(Address::city), "Vancouver")
             .create();
-        assertThat(map).hasSize(3);
+        Assertions.assertThat(map).hasSize(3);
 
         // Create from a model
         Model<Person> personModel = Instancio.of(Person.class)
-            .ignore(field(Person::age))
+            .ignore(Select.field(Person::age))
             .toModel();
         Set<Person> set = Instancio.ofSet(personModel).size(5).create();
-        assertThat(set).hasSize(5);
+        Assertions.assertThat(set).hasSize(5);
     }
 
     @Test
     public void generateData() {
         Person person = Instancio.of(Person.class)
-            .generate(field("age"), gen -> gen.ints().range(18, 65))
-            .generate(field(Address.class, "city"), gen -> gen.string().length(10))
-            .generate(field("phone"), gen -> gen.text().pattern("#d#d#d-#d#d-#d#d"))
+            .generate(Select.field("age"), gen -> gen.ints().range(18, 65))
+            .generate(Select.field(Address.class, "city"), gen -> gen.string().length(10))
+            .generate(Select.field("phone"), gen -> gen.text().pattern("#d#d#d-#d#d-#d#d"))
             .create();
 
-        assertThat(person.phone()).containsPattern("\\d{3}-\\d{2}-\\d{2}");
+        Assertions.assertThat(person.phone()).containsPattern("\\d{3}-\\d{2}-\\d{2}");
     }
 }

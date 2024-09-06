@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 public class ExceptionsTest {
     @Test
     public void testException1() {
-        assertThatThrownBy(() -> {
+        Assertions.assertThatThrownBy(() -> {
             throw new Exception("boom!");
         }).isInstanceOf(Exception.class)
             .hasMessageContaining("boom");
@@ -20,7 +20,7 @@ public class ExceptionsTest {
 
     @Test
     public void testException2() {
-        assertThatExceptionOfType(IOException.class).isThrownBy(() -> {
+        Assertions.assertThatExceptionOfType(IOException.class).isThrownBy(() -> {
                 throw new IOException("boom!");
             })
             .withMessage("%s!", "boom")
@@ -30,7 +30,7 @@ public class ExceptionsTest {
 
     @Test
     public void testException3() {
-        assertThatIOException().isThrownBy(() -> {
+        Assertions.assertThatIOException().isThrownBy(() -> {
                 throw new IOException("boom!");
             })
             .withMessage("%s!", "boom")
@@ -40,7 +40,7 @@ public class ExceptionsTest {
 
     @Test
     public void testException4() {
-        assertThatCode(() -> {
+        Assertions.assertThatCode(() -> {
         }).doesNotThrowAnyException();
     }
 
@@ -49,12 +49,12 @@ public class ExceptionsTest {
         // given some preconditions
 
         // when
-        Throwable thrown = catchThrowable(() -> {
+        Throwable thrown = Assertions.catchThrowable(() -> {
             throw new Exception("boom!");
         });
 
         // then
-        assertThat(thrown).isInstanceOf(Exception.class)
+        Assertions.assertThat(thrown).isInstanceOf(Exception.class)
             .hasMessageContaining("boom");
     }
 }

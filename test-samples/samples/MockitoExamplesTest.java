@@ -58,34 +58,34 @@ public class MockitoExamplesTest {
 
     @Test
     void mockExampleV1_inject_field() {
-        when(repository.count(anyInt(), eq(2))).thenReturn(10);
-        when(repository.count(anyInt(), eq(3))).thenReturn(20);
+        Mockito.when(repository.count(ArgumentMatchers.anyInt(), ArgumentMatchers.eq(2))).thenReturn(10);
+        Mockito.when(repository.count(ArgumentMatchers.anyInt(), ArgumentMatchers.eq(3))).thenReturn(20);
 
-        assertThat(repository.count(0, 2)).isEqualTo(10);
-        assertThat(repository.count(0, 3)).isEqualTo(20);
+        Assertions.assertThat(repository.count(0, 2)).isEqualTo(10);
+        Assertions.assertThat(repository.count(0, 3)).isEqualTo(20);
     }
 
     @Test
     void mockExampleV2_inject_argument(@Mock Repository repository) {
-        when(repository.count(anyInt(), eq(2))).thenReturn(10);
-        when(repository.count(anyInt(), eq(3))).thenReturn(20);
+        Mockito.when(repository.count(ArgumentMatchers.anyInt(), ArgumentMatchers.eq(2))).thenReturn(10);
+        Mockito.when(repository.count(ArgumentMatchers.anyInt(), ArgumentMatchers.eq(3))).thenReturn(20);
 
-        assertThat(repository.count(0, 2)).isEqualTo(10);
-        assertThat(repository.count(0, 3)).isEqualTo(20);
+        Assertions.assertThat(repository.count(0, 2)).isEqualTo(10);
+        Assertions.assertThat(repository.count(0, 3)).isEqualTo(20);
     }
 
     @Test
     void verifyExample() {
         service.calculate(10);
-        verify(repository, only()).count(anyInt(), eq(10));
+        Mockito.verify(repository, Mockito.only()).count(ArgumentMatchers.anyInt(), ArgumentMatchers.eq(10));
     }
 
     @Test
     void spyExample() {
         fibonacciService.fib(5);
-        verify(fibonacciService).fib(5);
-        verify(fibonacciService).fib(4);
-        verify(fibonacciService, times(2)).fib(3);
-        verify(fibonacciService, times(3)).fib(2);
+        Mockito.verify(fibonacciService).fib(5);
+        Mockito.verify(fibonacciService).fib(4);
+        Mockito.verify(fibonacciService, Mockito.times(2)).fib(3);
+        Mockito.verify(fibonacciService, Mockito.times(3)).fib(2);
     }
 }
