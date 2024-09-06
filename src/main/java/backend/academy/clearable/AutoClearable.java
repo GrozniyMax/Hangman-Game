@@ -1,6 +1,5 @@
 package backend.academy.clearable;
 
-import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.util.Arrays;
@@ -10,7 +9,7 @@ import java.util.Arrays;
  */
 public interface AutoClearable  extends Clearable {
 
-    static final Logger log = LogManager.getLogger();
+    Logger log = LogManager.getLogger();
     /**
      * Метод, который вызывает clear() во всех полях объекта, которые реализуют интерфейс Clearable
      */

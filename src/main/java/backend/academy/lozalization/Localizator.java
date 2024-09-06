@@ -157,7 +157,7 @@ public class Localizator implements Clearable {
                     log.info("Localizing String field {} of enum instance {}", field.getName(), name);
                     name = name.toLowerCase();
 
-                    String localizedValue = null;
+                    String localizedValue;
                     if (!annotationValue.isEmpty()) {
                         localizedValue = getLocalizedValue(bundle, name + "." + annotationValue);
                     } else {

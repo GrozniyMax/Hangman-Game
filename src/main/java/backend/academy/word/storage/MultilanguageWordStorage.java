@@ -1,6 +1,7 @@
 package backend.academy.word.storage;
 
 import java.util.Locale;
+import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
@@ -22,4 +23,15 @@ public class MultilanguageWordStorage extends WordsStorage{
         }
         return properties;
     }
+
+    public static boolean hasLanguage(Locale locale) {
+        try {
+            var bundle = ResourceBundle.getBundle("words.words", locale);
+            return true;
+        } catch (MissingResourceException e) {
+            return false;
+        }
+    }
+
+
 }
