@@ -23,11 +23,14 @@ import java.util.Set;
 @Localize("localization.Game")
 public class Game implements AutoClearable, Setupable<GameSetupParams> {
 
+    private static final int ASK_FOR_TIP_EVERY_N = 2;
+
     private int frameIndex=0;
     private int frameStep=0;
     private int tipCount=0;
     private int currentHP=0;
     private boolean guessedLetter=false;
+    private int askForTipCount=0;
 
     @Localize
     private Difficulty difficulty;
@@ -82,6 +85,7 @@ public class Game implements AutoClearable, Setupable<GameSetupParams> {
         currentHP=0;
         wrongLetters.clear();
         correctLetters.clear();
+        askForTipCount=ASK_FOR_TIP_EVERY_N;
     }
 
     public Game(@NonNull IoManager ioManager, @NonNull WordsStorage wordsStorage, @NonNull OutputStorage outputStorage) {
@@ -125,8 +129,11 @@ public class Game implements AutoClearable, Setupable<GameSetupParams> {
             if (checkWin()){
                 ioManager.print(winMsg);
                 return;
-            }else if(!guessedLetter && needTips && word.hasTip(tipCount+1) && currentHP>0) {
+            }else if(!guessedLetter && needTips && word.hasTip(tipCount+1) && currentHP>0 && (askForTipCount<=0)) {
                 askForTip();
+                askForTipCount = ASK_FOR_TIP_EVERY_N;
+            }else {
+                askForTipCount--;
             }
             if (currentHP<=0){
                 ioManager.print(outputFormer.createOutputForLastFrame());

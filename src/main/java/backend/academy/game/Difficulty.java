@@ -31,8 +31,13 @@ public enum Difficulty {
     }
 
     public static Difficulty valueOfLocalizeName(String localizedName){
-        return Arrays.stream(Difficulty.values())
-            .filter(difficulty -> difficulty.localizedName.equalsIgnoreCase(localizedName))
-            .findFirst().orElseThrow(IllegalArgumentException::new);
+        try{
+            int index = Integer.parseInt(localizedName);
+            return Difficulty.values()[index];
+        }catch (NumberFormatException|IndexOutOfBoundsException e){
+            return Arrays.stream(Difficulty.values())
+                .filter(difficulty -> difficulty.localizedName.equalsIgnoreCase(localizedName))
+                .findFirst().orElseThrow(IllegalArgumentException::new);
+        }
     }
 }
