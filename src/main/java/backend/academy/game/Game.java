@@ -93,7 +93,6 @@ public class Game implements AutoClearable, Setupable<GameSetupParams> {
     /**
      * Метод возвращающий игру "по умолчанию"
      * @return игра с настройками "по умолчанию"
-     * @throws IOException
      * @deprecated Теперь для создания игры по умолчанию использовать {@link GameBuilder}
      */
     public static Game withDefauls() throws IOException {

@@ -1,6 +1,5 @@
 package backend.academy.word.storage;
 
-import backend.academy.Main;
 import backend.academy.word.Word;
 import lombok.Getter;
 import lombok.ToString;

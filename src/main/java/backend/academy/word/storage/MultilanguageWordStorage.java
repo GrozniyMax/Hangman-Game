@@ -1,10 +1,8 @@
 package backend.academy.word.storage;
 
-import backend.academy.Main;
 import lombok.Getter;
 import java.util.Locale;
 import java.util.Map;
-import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
