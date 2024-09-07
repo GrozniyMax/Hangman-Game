@@ -113,6 +113,7 @@ public class Game implements AutoClearable, Setupable<GameSetupParams> {
         this.needTips=gameSetupParams.needTips();
         this.frameStep = this.difficulty.calculateStep(this.outputFormer.getNumberOfFrames());
         this.outputFormer.setup(this.word);
+        this.ioManager.locale(wordsStorage.getCurrentLocale());
 
         log.info("Game setup with difficulty:{} , needTips:{}", difficulty, needTips);
 

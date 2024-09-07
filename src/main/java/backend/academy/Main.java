@@ -28,16 +28,18 @@ public class Main {
         boolean restart = true;
         while (restart) {
             try {
+                Localizator localizator = new Localizator(Locale.getDefault());
+
                 IoManager ioManager = IoManager.defaultIoManager();
+                localizator.localizate(ioManager);
+                localizator.clear();
+
                 var game = new GameBuilder()
                     .ioManager(ioManager)
-                    .defaultWordsStorage()
                     .defaultOutputStorage()
+                    .multilanguageWordsStorage(ioManager.readLocale())
                     .build();
 
-
-
-                Localizator localizator = new Localizator(Locale.ENGLISH);
                 localizator.localizate(game);
                 localizator.clear();
 

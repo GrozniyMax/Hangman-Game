@@ -5,6 +5,7 @@ import backend.academy.game.Difficulty;
 import backend.academy.word.storage.MultilanguageWordStorage;
 import backend.academy.word.storage.WordsStorage;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -28,6 +29,9 @@ public class IoManager {
     public static IoManager defaultIoManager() {
         return defaultIoManager;
     }
+
+    @Setter
+    private Locale locale;
 
     //Выводимые сообщения
 
@@ -123,7 +127,7 @@ public class IoManager {
         if (line.length() == 1) {
 
             if ((Character.isLetter(line.charAt(0))) &&
-                Character.UnicodeBlock.of(line.charAt(0)).equals(Character.UnicodeBlock.CYRILLIC)) {
+                Character.UnicodeBlock.of(line.charAt(0)).equals(MultilanguageWordStorage.ofLanguage(locale))) {
                 return line.charAt(0);
             } else {
                 printStream.print(wrongAlphabetMsg);
@@ -152,7 +156,7 @@ public class IoManager {
         return category;
     }
 
-    public Locale readLocale(MultilanguageWordStorage wordsStorage) throws IOException {
+    public Locale readLocale() throws IOException {
         String input;
         Locale locale;
         for (int i = 0; i < INCORRECT_ATTEMPS_COUNT; i++) {
@@ -160,7 +164,7 @@ public class IoManager {
                 printStream.print(languageInputMsg+": ");
                 input = bufferedReader.readLine().strip();
                 locale = Locale.of(input);
-                if (wordsStorage.hasLanguage(locale)){
+                if (MultilanguageWordStorage.hasLanguage(locale)){
                     return locale;
                 }
             }catch (Exception e) {

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -80,5 +81,9 @@ public class WordsStorage {
         random.setSeed(System.currentTimeMillis());
 
         return words.keySet().stream().toList().get(random.nextInt(0,words.size()));
+    }
+
+    public Locale getCurrentLocale() {
+        return Locale.of("ru");
     }
 }

@@ -1,6 +1,9 @@
 package backend.academy.word.storage;
 
+import backend.academy.Main;
+import lombok.Getter;
 import java.util.Locale;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.ResourceBundle;
@@ -11,7 +14,15 @@ import java.util.ResourceBundle;
  */
 public class MultilanguageWordStorage extends WordsStorage{
 
+    private static final Map<Locale, Character> supportedLanguages = Map
+        .of(Locale.of("ru"), 'р',
+            Locale.ENGLISH, 'j');
+
+    @Getter
+    private Locale locale;
+
     public MultilanguageWordStorage(Locale locale) {
+        this.locale = locale;
         var bundle = ResourceBundle.getBundle("words.words", locale);
         this.load(converResourceBundleToProperties(bundle));
     }
@@ -25,13 +36,16 @@ public class MultilanguageWordStorage extends WordsStorage{
     }
 
     public static boolean hasLanguage(Locale locale) {
-        try {
-            var bundle = ResourceBundle.getBundle("words.words", locale);
-            return true;
-        } catch (MissingResourceException e) {
-            return false;
-        }
+        return supportedLanguages.containsKey(locale);
     }
 
+    public static Character.UnicodeBlock ofLanguage(Locale locale) {
+        if (!hasLanguage(locale)) return null;
+        return Character.UnicodeBlock.of(supportedLanguages.get(locale));
+    }
 
+    @Override
+    public Locale getCurrentLocale() {
+        return locale;
+    }
 }
