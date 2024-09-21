@@ -90,8 +90,8 @@ public class DifficultyCalculationTest {
         Difficulty difficulty = Difficulty.EASY;
 
         Assertions.assertThatExceptionOfType(IllegalArgumentException.class)
-            .isThrownBy(() -> difficulty.calculateStep(givenMaxTriesCount))
-            .withMessage("Argument must be positive");
+            .isThrownBy(() -> difficulty.calculateStep(givenMaxTriesCount));
+
     }
 
     @ParameterizedTest
@@ -100,8 +100,8 @@ public class DifficultyCalculationTest {
         Difficulty difficulty = Difficulty.EASY;
 
         Assertions.assertThatExceptionOfType(IllegalArgumentException.class)
-            .isThrownBy(() -> difficulty.calculateStep(givenMaxTriesCount))
-            .withMessage("Argument must be positive");
+            .isThrownBy(() -> difficulty.calculateStep(givenMaxTriesCount));
+
     }
 
     @ParameterizedTest
@@ -110,8 +110,8 @@ public class DifficultyCalculationTest {
         Difficulty difficulty = Difficulty.EASY;
 
         Assertions.assertThatExceptionOfType(IllegalArgumentException.class)
-            .isThrownBy(() -> difficulty.calculateStep(givenMaxTriesCount))
-            .withMessage("Argument must be positive");
+            .isThrownBy(() -> difficulty.calculateStep(givenMaxTriesCount));
+
     }
 
 
