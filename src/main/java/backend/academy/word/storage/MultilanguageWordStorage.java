@@ -1,27 +1,26 @@
 package backend.academy.word.storage;
 
-import lombok.Getter;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.ResourceBundle;
+import lombok.Getter;
 
 /**
  * Мультиязычное хранилище слов(для хранения используется {@link ResourceBundle} в resources
- *
  */
-public class MultilanguageWordStorage extends WordsStorage{
+public class MultilanguageWordStorage extends WordsStorage {
 
-    private static final Map<Locale, Character> supportedLanguages = Map
+    private static final Map<Locale, Character> LOCALE_TO_CHAR_OF_ALPHABET = Map
         .of(Locale.of("ru"), 'р',
             Locale.ENGLISH, 'j');
 
     @Getter
     private Locale locale;
 
-    public MultilanguageWordStorage(Locale locale) {
-        this.locale = locale;
-        var bundle = ResourceBundle.getBundle("words.words", locale);
+    public MultilanguageWordStorage(Locale locale, String resourcePath) {
+        this.locale = LOCALE_TO_CHAR_OF_ALPHABET.containsKey(locale) ? locale : Locale.ENGLISH;
+        var bundle = ResourceBundle.getBundle(resourcePath, this.locale);
         this.load(converResourceBundleToProperties(bundle));
     }
 
@@ -34,12 +33,14 @@ public class MultilanguageWordStorage extends WordsStorage{
     }
 
     public static boolean hasLanguage(Locale locale) {
-        return supportedLanguages.containsKey(locale);
+        return LOCALE_TO_CHAR_OF_ALPHABET.containsKey(locale);
     }
 
     public static Character.UnicodeBlock ofLanguage(Locale locale) {
-        if (!hasLanguage(locale)) return null;
-        return Character.UnicodeBlock.of(supportedLanguages.get(locale));
+        if (!hasLanguage(locale)) {
+            return null;
+        }
+        return Character.UnicodeBlock.of(LOCALE_TO_CHAR_OF_ALPHABET.get(locale));
     }
 
     @Override

@@ -11,45 +11,41 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-
 public class OutputStorage {
-
 
     protected final List<List<String>> frames = new LinkedList<>();
 
-    public void load(List<List<String>>  frames){
+    public void load(List<List<String>> frames) {
         this.frames.addAll(frames);
     }
 
-    public void loadFromFiles(String ... filePaths){
+    public void loadFromFiles(String... filePaths) {
         loadFromFiles(Arrays.stream(filePaths)
-        .map(File::new).toList());
+            .map(File::new).toList());
     }
 
-    public void loadFromFiles(List<File> files){
+    public void loadFromFiles(List<File> files) {
         loadFromFiles(files.stream()
             .filter(File::exists)
             .map(File::toPath)
             .toList());
 
-
     }
 
-    public void loadFromFiles(Collection<Path> paths){
+    public void loadFromFiles(Collection<Path> paths) {
         paths.stream()
             .map(this::getContentFromFile)
-            .filter((list)-> Optional.ofNullable(list).isPresent())
+            .filter((list) -> Optional.ofNullable(list).isPresent())
             .forEach(frames::add);
     }
 
-
-
     /**
      * Читает весь файл в кодировке UTF-8
+     *
      * @param file путь до файла
      * @return список строк иначе null
      */
-    private List<String> getContentFromFile(Path file){
+    private List<String> getContentFromFile(Path file) {
         try {
             return Files.readAllLines(file, StandardCharsets.UTF_8);
         } catch (IOException e) {
@@ -57,17 +53,16 @@ public class OutputStorage {
         }
     }
 
-    public List<String> getFrame(int index){
-        if(frames.size() > index && index>=0){
+    public List<String> getFrame(int index) {
+        if (frames.size() > index && index >= 0) {
             return frames.get(index);
-        }else {
-            return frames.get(frames.size()-1);
+        } else {
+            return frames.get(frames.size() - 1);
         }
     }
 
-    public Integer getFramesCount(){
+    public Integer getFramesCount() {
         return frames.size();
     }
-
 
 }

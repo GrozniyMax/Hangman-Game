@@ -1,9 +1,6 @@
 package backend.academy.lozalization;
 
 import backend.academy.clearable.Clearable;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import lombok.extern.log4j.Log4j2;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -14,6 +11,9 @@ import java.util.MissingResourceException;
 import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.Set;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -23,8 +23,12 @@ public class Localizator implements Clearable {
 
     private final Set<Object> visitedObjects = new HashSet<>();
 
+    String classIsNotMarkedWith = "Class {} is not marked @Localize";
+
+    @SuppressWarnings("checkstyle:ReturnCount")
     @SneakyThrows
     public void localizate(Object o) {
+
         log.info("Localizing object into {} locale", locale);
 
         if (visitedObjects.contains(o)) {
@@ -42,7 +46,7 @@ public class Localizator implements Clearable {
         }
 
         if (!clazz.isAnnotationPresent(Localize.class)) {
-            log.info("Class {} is not marked @Localize", clazz.getName());
+            log.info(classIsNotMarkedWith, clazz.getName());
             return;
         }
         var annotation = clazz.getAnnotation(Localize.class);
@@ -61,7 +65,7 @@ public class Localizator implements Clearable {
             Object fieldValue = field.get(o);
 
             if (!field.isAnnotationPresent(Localize.class)) {
-                continue;//Все поля не помеченные аннотацией пропускаем
+                continue; //Все поля не помеченные аннотацией пропускаем
             }
 
             if (fieldType.equals(String.class)) {
@@ -76,7 +80,7 @@ public class Localizator implements Clearable {
                 }
 
                 if (Objects.isNull(localizedValue)) {
-                    continue;// Не получилось найти значение для поля, значит оставим его таким, какое было по умолчанию
+                    continue; //Не получилось найти значение для поля, значит оставим его таким, какое было по умолчанию
                 }
                 field.set(o, localizedValue);
                 continue;
@@ -84,7 +88,6 @@ public class Localizator implements Clearable {
                 localizeEnum(fieldType);
                 continue;
             }
-
 
             localizate(fieldValue);
         }
@@ -106,7 +109,7 @@ public class Localizator implements Clearable {
     private String getLocalizedValue(ResourceBundle bundle, String dotSeparatedKey) {
         try {
             return bundle.getString(dotSeparatedKey);
-        } catch (MissingResourceException|NullPointerException e) {
+        } catch (MissingResourceException | NullPointerException e) {
             log.warn("Cannot find resource bundle for key {} and locale {}", dotSeparatedKey, locale);
             return null;
         }
@@ -114,12 +117,15 @@ public class Localizator implements Clearable {
 
     private String processCamelCase(String camelCaseKey) {
         StringBuilder builder = new StringBuilder();
+        Character lowerCased;
         for (Character c : camelCaseKey.toCharArray()) {
             if (Character.isUpperCase(c)) {
                 builder.append(".");
-                c = Character.toLowerCase(c);
+                lowerCased = Character.toLowerCase(c);
+            } else {
+                lowerCased = c;
             }
-            builder.append(c);
+            builder.append(lowerCased);
         }
         return builder.toString();
     }
@@ -133,12 +139,11 @@ public class Localizator implements Clearable {
 
         //Проверки на необходимость локализации этого enum а
         if (!enumClass.isAnnotationPresent(Localize.class)) {
-            log.info("Class {} is not marked @Localize", enumClass.getName());
+            log.info(classIsNotMarkedWith, enumClass.getName());
             return;
         }
         var annotation = enumClass.getAnnotation(Localize.class);
         var bundle = getBundle(annotation.value().isEmpty() ? enumClass.getName() : annotation.value());
-
 
         List<Field> fieldsToLocalize =
             Arrays.stream(enumClass.getDeclaredFields()).filter(field -> field.isAnnotationPresent(Localize.class))
@@ -161,11 +166,12 @@ public class Localizator implements Clearable {
                     if (!annotationValue.isEmpty()) {
                         localizedValue = getLocalizedValue(bundle, name + "." + annotationValue);
                     } else {
-                        localizedValue = getLocalizedValue(bundle, name + "." +
-                            processCamelCase(field.getName()));
+                        localizedValue = getLocalizedValue(bundle, name + "."
+                            + processCamelCase(field.getName()));
                     }
                     if (Objects.isNull(localizedValue)) {
-                        continue;// Не получилось найти значение для поля, значит оставим его таким, какое было по умолчанию
+                        continue;
+                        // Не получилось найти значение для поля, значит оставим его таким, какое было по умолчанию
                     }
                     field.set(enumInstance, localizedValue);
                 }

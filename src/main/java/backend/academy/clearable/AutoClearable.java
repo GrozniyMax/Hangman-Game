@@ -1,19 +1,21 @@
 package backend.academy.clearable;
 
+import java.util.Arrays;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import java.util.Arrays;
 
 /**
  * Интерфейс для классов, где есть поля, модифицируемые в процессе игры.
  */
-public interface AutoClearable  extends Clearable {
+public interface AutoClearable extends Clearable {
 
-    Logger log = LogManager.getLogger();
+    Logger LOGGER = LogManager.getLogger();
+
     /**
      * Метод, который вызывает clear() во всех полях объекта, которые реализуют интерфейс Clearable
      */
-    default void clearClearableFields(){
+
+    default void clearClearableFields() {
         Arrays.stream(this.getClass().getDeclaredFields())
             .forEach((field -> {
                 try {
@@ -21,13 +23,13 @@ public interface AutoClearable  extends Clearable {
                     Object fieldValue = field.get(this);
                     if (fieldValue instanceof AutoClearable) {
                         ((AutoClearable) fieldValue).fullClear();
-                        log.info("Field {} was auto-cleared", field.getName());
+                        LOGGER.info("Field {} was auto-cleared", field.getName());
                     } else if (fieldValue instanceof Clearable) {
-                        log.info("Field {} was cleared", field.getName());
+                        LOGGER.info("Field {} was cleared", field.getName());
                         ((Clearable) fieldValue).clear();
                     }
                 } catch (IllegalAccessException e) {
-                    log.error("Error clearing field {}: {}", field.getName(), e);
+                    LOGGER.error("Error clearing field {}: {}", field.getName(), e);
                 }
             }));
     }
@@ -35,7 +37,7 @@ public interface AutoClearable  extends Clearable {
     /**
      * Метод для полной очистки объекта
      */
-    default void fullClear(){
+    default void fullClear() {
         clearClearableFields();
         clear();
     }

@@ -1,23 +1,22 @@
 package backend.academy.game;
 
-import backend.academy.clearable.AutoClearable;
 import backend.academy.Setupable;
+import backend.academy.clearable.AutoClearable;
 import backend.academy.io.input.IoManager;
 import backend.academy.io.output.OutputFormer;
 import backend.academy.io.output.storage.OutputStorage;
 import backend.academy.io.output.storage.ResourcesOutputStorage;
 import backend.academy.lozalization.Localize;
-import backend.academy.word.storage.ResourceWordStorage;
 import backend.academy.word.Word;
+import backend.academy.word.storage.ResourceWordStorage;
 import backend.academy.word.storage.WordsStorage;
-import lombok.Getter;
-import lombok.extern.log4j.Log4j2;
-import org.jspecify.annotations.NonNull;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-
+import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
+import org.jspecify.annotations.NonNull;
 
 @Log4j2
 @Localize("localization.Game")
@@ -25,12 +24,12 @@ public class Game implements AutoClearable, Setupable<GameSetupParams> {
 
     private static final int ASK_FOR_TIP_EVERY_N = 2;
 
-    private int frameIndex=0;
-    private int frameStep=0;
-    private int tipCount=0;
-    private int currentHP=0;
-    private boolean guessedLetter=false;
-    private int askForTipCount=0;
+    private int frameIndex = 0;
+    private int frameStep = 0;
+    private int tipCount = 0;
+    private int currentHP = 0;
+    private boolean guessedLetter = false;
+    private int askForTipCount = 0;
 
     @Localize
     private Difficulty difficulty;
@@ -51,15 +50,14 @@ public class Game implements AutoClearable, Setupable<GameSetupParams> {
 
     private final Set<Character> correctLetters = new HashSet<>();
 
-    private Word word=null;
+    private Word word = null;
 
-    private Set<Character> wordSet=new HashSet<>();
+    private Set<Character> wordSet = new HashSet<>();
 
     private Boolean needTips;
 
-
     @Localize
-    private String winMsg ="Ура. Вы победили";
+    private String winMsg = "Ура. Вы победили";
 
     @Localize
     private String loseMsg = "К сожалению, у вас жизни закончились";
@@ -78,42 +76,47 @@ public class Game implements AutoClearable, Setupable<GameSetupParams> {
 
     @Override
     public void clear() {
-        frameIndex=0;
-        frameStep=0;
+        frameIndex = 0;
+        frameStep = 0;
         word = null;
         difficulty = null;
-        currentHP=0;
+        currentHP = 0;
         wrongLetters.clear();
         correctLetters.clear();
-        askForTipCount=ASK_FOR_TIP_EVERY_N;
+        askForTipCount = ASK_FOR_TIP_EVERY_N;
     }
 
-    public Game(@NonNull IoManager ioManager, @NonNull WordsStorage wordsStorage, @NonNull OutputStorage outputStorage) {
+    public Game(
+        @NonNull IoManager ioManager,
+        @NonNull WordsStorage wordsStorage,
+        @NonNull OutputStorage outputStorage
+    ) {
         this.ioManager = ioManager;
         this.wordsStorage = wordsStorage;
-        this.outputFormer = new OutputFormer(outputStorage, wrongLetters,correctLetters);
+        this.outputFormer = new OutputFormer(outputStorage, wrongLetters, correctLetters);
     }
 
     /**
      * Метод возвращающий игру "по умолчанию"
+     *
      * @return игра с настройками "по умолчанию"
      * @deprecated Теперь для создания игры по умолчанию использовать {@link GameBuilder}
      */
     public static Game withDefauls() throws IOException {
         return new Game(IoManager.defaultIoManager(),
-            new ResourceWordStorage(),
+            new ResourceWordStorage("/words.properties"),
             new ResourcesOutputStorage());
     }
 
     @Override
     public void setup(GameSetupParams gameSetupParams) {
         this.word = wordsStorage.getRandomWord(gameSetupParams.category());
-        for (Character c:word.word().toUpperCase().toCharArray()){
+        for (Character c : word.word().toUpperCase().toCharArray()) {
             wordSet.add(c);
         }
         this.difficulty = gameSetupParams.difficulty();
-        this.currentHP=difficulty.triesCount();
-        this.needTips=gameSetupParams.needTips();
+        this.currentHP = difficulty.triesCount();
+        this.needTips = gameSetupParams.needTips();
         this.frameStep = this.difficulty.calculateStep(this.outputFormer.getNumberOfFrames());
         this.outputFormer.setup(this.word);
         this.ioManager.locale(wordsStorage.getCurrentLocale());
@@ -124,18 +127,19 @@ public class Game implements AutoClearable, Setupable<GameSetupParams> {
 
     public void run() throws IOException {
         ioManager.print(outputFormer.createOutput(frameIndex));
-        while (currentHP>0) {
+        while (currentHP > 0) {
             round();
-            if (checkWin()){
+            if (checkWin()) {
                 ioManager.print(winMsg);
                 return;
-            }else if(!guessedLetter && needTips && word.hasTip(tipCount+1) && currentHP>0 && (askForTipCount<=0)) {
+            } else if (!guessedLetter && needTips && word.hasTip(tipCount + 1) && currentHP > 0
+                && (askForTipCount <= 0)) {
                 askForTip();
                 askForTipCount = ASK_FOR_TIP_EVERY_N;
-            }else {
+            } else {
                 askForTipCount--;
             }
-            if (currentHP<=0){
+            if (currentHP <= 0) {
                 ioManager.print(outputFormer.createOutputForLastFrame());
             }
             log.info("Current game HP:{}, wrong-letters:{}, right-letters:{}", currentHP, wrongLetters, correctLetters);
@@ -147,18 +151,18 @@ public class Game implements AutoClearable, Setupable<GameSetupParams> {
     private void round() throws IOException {
         Character letter = ioManager.readLetter();
         log.info("Got letter:{}", letter.toString());
-        if (wrongLetters.contains(letter)||correctLetters.contains(letter)) {
+        if (wrongLetters.contains(letter) || correctLetters.contains(letter)) {
             ioManager.print(repeatLetterMsg);
             return;
         }
         if (word.word().toUpperCase().contains(letter.toString().toUpperCase())) {
             correctLetters.add(letter);
             this.guessedLetter = true;
-        }else {
+        } else {
             wrongLetters.add(letter);
             frameIndex += frameStep;
-            currentHP --;
-            this.guessedLetter=false;
+            currentHP--;
+            this.guessedLetter = false;
         }
         ioManager.print(outputFormer.createOutput(frameIndex));
     }
@@ -169,15 +173,13 @@ public class Game implements AutoClearable, Setupable<GameSetupParams> {
         log.info("Got value {}", needTip);
         if (needTip) {
             ioManager.print(
-            Optional.of(word.getTip(++tipCount))
-                .orElse(runOutOfTipsMsg));
+                Optional.of(word.getTip(++tipCount))
+                    .orElse(runOutOfTipsMsg));
         }
     }
 
-    private Boolean checkWin(){
+    private Boolean checkWin() {
         return wordSet.equals(correctLetters);
     }
-
-
 
 }

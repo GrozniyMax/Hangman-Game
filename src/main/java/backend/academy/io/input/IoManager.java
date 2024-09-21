@@ -1,17 +1,17 @@
 package backend.academy.io.input;
 
-import backend.academy.lozalization.Localize;
 import backend.academy.game.Difficulty;
+import backend.academy.lozalization.Localize;
 import backend.academy.word.storage.MultilanguageWordStorage;
 import backend.academy.word.storage.WordsStorage;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Locale;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 @RequiredArgsConstructor
 @Localize("localization.IoManager")
@@ -22,12 +22,12 @@ public class IoManager {
     private final BufferedReader bufferedReader;
     private final PrintStream printStream;
 
-    private static final IoManager defaultIoManager =
+    private static final IoManager DEFAULT_IO_MANAGER =
         new IoManager(new BufferedReader(new InputStreamReader(System.in)),
             new PrintStream(System.out));
 
     public static IoManager defaultIoManager() {
-        return defaultIoManager;
+        return DEFAULT_IO_MANAGER;
     }
 
     @Setter
@@ -105,13 +105,13 @@ public class IoManager {
         for (int i = 0; i < INCORRECT_ATTEMPS_COUNT; i++) {
             printStream.print(question + booleanInputMsg);
             String input = bufferedReader.readLine().strip();
-            if (input.equalsIgnoreCase("true") || input.equalsIgnoreCase("yes") ||
-                input.equalsIgnoreCase("y") ||
-                input.equalsIgnoreCase("да") || input.equalsIgnoreCase("д")) {
+            if (input.equalsIgnoreCase("true") || input.equalsIgnoreCase("yes")
+                || input.equalsIgnoreCase("y") || input.equalsIgnoreCase("да")
+                || input.equalsIgnoreCase("д")) {
                 return true;
-            } else if (input.equalsIgnoreCase("false") || input.equalsIgnoreCase("no") ||
-                input.equalsIgnoreCase("n") || input.equalsIgnoreCase("нет") ||
-                input.equalsIgnoreCase("н")) {
+            } else if (input.equalsIgnoreCase("false") || input.equalsIgnoreCase("no")
+                || input.equalsIgnoreCase("n") || input.equalsIgnoreCase("нет")
+                || input.equalsIgnoreCase("н")) {
                 return false;
             } else {
                 printStream.println(invalidInputText);
@@ -126,11 +126,11 @@ public class IoManager {
         String line = bufferedReader.readLine().strip().toUpperCase();
         if (line.length() == 1) {
 
-            if ((Character.isLetter(line.charAt(0))) &&
-                Character.UnicodeBlock.of(line.charAt(0)).equals(MultilanguageWordStorage.ofLanguage(locale))) {
+            if ((Character.isLetter(line.charAt(0)))
+                && Character.UnicodeBlock.of(line.charAt(0)).equals(MultilanguageWordStorage.ofLanguage(locale))) {
                 return line.charAt(0);
             } else {
-                printStream.print(wrongAlphabetMsg);
+                printStream.println(wrongAlphabetMsg);
                 return readLetter();
             }
         } else {
@@ -148,7 +148,7 @@ public class IoManager {
             if (wordsStorage.hasCategory(line)) {
                 return line;
             } else {
-                System.out.println(invalidCategoryInputMsg);
+                printStream.println(invalidCategoryInputMsg);
             }
         }
         String category = wordsStorage.getRandomCategory();
@@ -158,16 +158,16 @@ public class IoManager {
 
     public Locale readLocale() throws IOException {
         String input;
-        Locale locale;
+        Locale readLocale;
         for (int i = 0; i < INCORRECT_ATTEMPS_COUNT; i++) {
             try {
-                printStream.print(languageInputMsg+": ");
+                printStream.print(languageInputMsg + ": ");
                 input = bufferedReader.readLine().strip();
-                locale = Locale.of(input);
-                if (MultilanguageWordStorage.hasLanguage(locale)){
-                    return locale;
+                readLocale = Locale.of(input);
+                if (MultilanguageWordStorage.hasLanguage(readLocale)) {
+                    return readLocale;
                 }
-            }catch (Exception e) {
+            } catch (Exception e) {
                 printStream.println(wrongAlphabetMsg);
             }
             printStream.println(invalidLanguageInputMsg);

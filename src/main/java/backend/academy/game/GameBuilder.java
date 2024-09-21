@@ -5,10 +5,11 @@ import backend.academy.io.output.storage.OutputStorage;
 import backend.academy.io.output.storage.ResourcesOutputStorage;
 import backend.academy.word.storage.MultilanguageWordStorage;
 import backend.academy.word.storage.WordsStorage;
-import lombok.NoArgsConstructor;
 import java.util.Locale;
+import lombok.NoArgsConstructor;
 
 
+@SuppressWarnings("checkstyle:MultipleStringLiterals")
 @NoArgsConstructor
 public class GameBuilder {
 
@@ -33,28 +34,28 @@ public class GameBuilder {
         return this;
     }
 
-    public GameBuilder defaultIoManager(){
+    public GameBuilder defaultIoManager() {
         this.ioManager = IoManager.defaultIoManager();
         return this;
     }
 
-    public GameBuilder defaultOutputStorage(){
+    public GameBuilder defaultOutputStorage() {
         this.outputStorage = new ResourcesOutputStorage();
         return this;
     }
 
-    public GameBuilder defaultWordsStorage(){
-        this.wordsStorage = new MultilanguageWordStorage(Locale.getDefault());
+    public GameBuilder defaultWordsStorage() {
+        this.wordsStorage = new MultilanguageWordStorage(Locale.getDefault(), "words.words");
         return this;
     }
 
-    public GameBuilder multilanguageWordsStorage(Locale locale){
-        this.wordsStorage = new MultilanguageWordStorage(locale);
+    public GameBuilder defaultMultilanguageWordsStorage(Locale locale) {
+        this.wordsStorage = new MultilanguageWordStorage(locale, "words.words");
         return this;
     }
 
     public Game build() {
-        if (wordsStorage == null||ioManager == null||outputStorage == null) {
+        if (wordsStorage == null || ioManager == null || outputStorage == null) {
             throw new IllegalStateException("You must set up all the required parameters");
         }
         return new Game(ioManager, wordsStorage, outputStorage);
