@@ -14,7 +14,5 @@ public class GameSetupParams {
     private String category;
     @NonNull
     private Difficulty difficulty;
-    @NonNull
-    private Boolean needTips;
 
 }

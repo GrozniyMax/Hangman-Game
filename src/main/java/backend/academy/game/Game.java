@@ -22,14 +22,11 @@ import org.jspecify.annotations.NonNull;
 @Localize("localization.Game")
 public class Game implements AutoClearable, Setupable<GameSetupParams> {
 
-    private static final int ASK_FOR_TIP_EVERY_N = 2;
 
     private int frameIndex = 0;
     private int frameStep = 0;
     private int tipCount = 0;
     private int currentHP = 0;
-    private boolean guessedLetter = false;
-    private int askForTipCount = 0;
 
     @Localize
     private Difficulty difficulty;
@@ -83,7 +80,6 @@ public class Game implements AutoClearable, Setupable<GameSetupParams> {
         currentHP = 0;
         wrongLetters.clear();
         correctLetters.clear();
-        askForTipCount = ASK_FOR_TIP_EVERY_N;
     }
 
     public Game(
@@ -116,7 +112,6 @@ public class Game implements AutoClearable, Setupable<GameSetupParams> {
         }
         this.difficulty = gameSetupParams.difficulty();
         this.currentHP = difficulty.triesCount();
-        this.needTips = gameSetupParams.needTips();
         this.frameStep = this.difficulty.calculateStep(this.outputFormer.getNumberOfFrames());
         this.outputFormer.setup(this.word);
         this.ioManager.locale(wordsStorage.getCurrentLocale());
@@ -132,12 +127,6 @@ public class Game implements AutoClearable, Setupable<GameSetupParams> {
             if (checkWin()) {
                 ioManager.print(winMsg);
                 return;
-            } else if (!guessedLetter && needTips && word.hasTip(tipCount + 1) && currentHP > 0
-                && (askForTipCount <= 0)) {
-                askForTip();
-                askForTipCount = ASK_FOR_TIP_EVERY_N;
-            } else {
-                askForTipCount--;
             }
             if (currentHP <= 0) {
                 ioManager.print(outputFormer.createOutputForLastFrame());
@@ -149,7 +138,16 @@ public class Game implements AutoClearable, Setupable<GameSetupParams> {
     }
 
     private void round() throws IOException {
-        Character letter = ioManager.readLetter();
+        var read = ioManager.readLetterOrTips();
+
+        while (read.userAskedForTip()) {
+            ioManager.print(
+                Optional.ofNullable(word.getTip(++tipCount))
+                    .orElse(runOutOfTipsMsg));
+            read = ioManager.readLetterOrTips();
+        }
+
+        Character letter = read.letter();
         log.info("Got letter:{}", letter.toString());
         if (wrongLetters.contains(letter) || correctLetters.contains(letter)) {
             ioManager.print(repeatLetterMsg);
@@ -157,16 +155,19 @@ public class Game implements AutoClearable, Setupable<GameSetupParams> {
         }
         if (word.word().toUpperCase().contains(letter.toString().toUpperCase())) {
             correctLetters.add(letter);
-            this.guessedLetter = true;
         } else {
             wrongLetters.add(letter);
             frameIndex += frameStep;
             currentHP--;
-            this.guessedLetter = false;
         }
         ioManager.print(outputFormer.createOutput(frameIndex));
     }
 
+    /**
+     * Метод чтения спрашивающий нужна ли подсказка
+     * @throws IOException при проблемах работы с потоками
+     * @deprecated since 1.7 of {@link IoManager}
+     */
     private void askForTip() throws IOException {
 
         boolean needTip = ioManager.readBoolean(needTipMsg, true, invalidBoolValueInput);

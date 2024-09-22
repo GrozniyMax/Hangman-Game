@@ -13,6 +13,12 @@ import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Класс отвечающий за ввод и вывод
+ *
+ * @author Тараненко Максим
+ * @version 1.7
+ */
 @RequiredArgsConstructor
 @Localize("localization.IoManager")
 public class IoManager {
@@ -43,7 +49,7 @@ public class IoManager {
     @Localize
     private String booleanInputMsg = " Введите (да/нет) :";
     @Localize
-    private String letterInputMsg = "Введите букву: ";
+    private String letterInputMsg = "Введите букву(если нужна подсказка, напишите --tip): ";
     @Localize
     private String categoryInputMsg = "Выберите категорию слов из набора ";
     @Localize
@@ -121,6 +127,33 @@ public class IoManager {
         return defaultValue;
     }
 
+    public ReadLetterOutput readLetterOrTips() throws IOException {
+        printStream.print(letterInputMsg);
+        String line = bufferedReader.readLine().strip().toUpperCase();
+        if (line.contains("--TIP")) {
+            return new ReadLetterOutput(true);
+        } else if (line.length() == 1) {
+            if ((Character.isLetter(line.charAt(0)))
+                && Character.UnicodeBlock.of(line.charAt(0)).equals(MultilanguageWordStorage.ofLanguage(locale))) {
+                return new ReadLetterOutput(line.charAt(0));
+            } else {
+                printStream.println(wrongAlphabetMsg);
+                return readLetterOrTips();
+            }
+        } else {
+            printStream.println(invalidLetterInputMsg);
+            return readLetterOrTips();
+        }
+    }
+
+    /**
+     * Метод который читает из консоли букву
+     *
+     * @return прочитанная буква
+     * @throws IOException ошибки работы с потоками
+     * @deprecated since 1.7
+     *     use instead {@link IoManager#readLetterOrTips()}
+     */
     public Character readLetter() throws IOException {
         printStream.print(letterInputMsg);
         String line = bufferedReader.readLine().strip().toUpperCase();

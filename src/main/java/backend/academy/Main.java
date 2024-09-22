@@ -51,7 +51,6 @@ public class Main {
 
                 var params = GameSetupParams.builder()
                     .difficulty(ioManager.readDifficulty())
-                    .needTips(ioManager.readNeedTips())
                     .category(ioManager.readCategory(game.wordsStorage()));
 
                 game.setup(params.build());

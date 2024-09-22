@@ -1,4 +1,4 @@
-package backend.academy.IoManagerTest;
+package backend.academy;
 
 import backend.academy.game.Difficulty;
 import backend.academy.io.input.IoManager;
